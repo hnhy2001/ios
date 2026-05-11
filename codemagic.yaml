@@ -1,0 +1,12 @@
+workflows:
+  ios-workflow:
+    name: iOS Build
+    instance_type: mac_mini_m1
+    scripts:
+      - name: Install CocoaPods dependencies
+        script: |
+          cd App
+          pod install
+      - name: Build iOS App
+        script: |
+          xcodebuild build -workspace App/App.xcworkspace -scheme App -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO
