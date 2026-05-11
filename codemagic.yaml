@@ -1,18 +1,14 @@
 workflows:
   ios-workflow:
-    name: iOS Build Unsigned
+    name: iOS Build Unsigned (SPM)
     instance_type: mac_mini_m1
     scripts:
-      - name: Install CocoaPods dependencies
-        script: |
-          cd App
-          pod install
       - name: Build unsigned IPA
         script: |
-          # Build app không cần chứng chỉ
-          xcodebuild build -workspace App/App.xcworkspace -scheme App -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CONFIGURATION_BUILD_DIR=build/Build/Products/Release-iphoneos
+          # Build app dùng cấu hình của Swift Package Manager
+          xcodebuild build -project App/App.xcodeproj -scheme App -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CONFIGURATION_BUILD_DIR=build/Build/Products/Release-iphoneos
           
-          # Đóng gói thành file .ipa
+          # Đóng gói thành file .ipa để tải về máy Windows
           mkdir -p build/Payload
           mv build/Build/Products/Release-iphoneos/App.app build/Payload/
           cd build
