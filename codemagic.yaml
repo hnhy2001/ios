@@ -1,12 +1,21 @@
 workflows:
   ios-workflow:
-    name: iOS Build
+    name: iOS Build Unsigned
     instance_type: mac_mini_m1
     scripts:
       - name: Install CocoaPods dependencies
         script: |
           cd App
           pod install
-      - name: Build iOS App
+      - name: Build unsigned IPA
         script: |
-          xcodebuild build -workspace App/App.xcworkspace -scheme App -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO
+          # Build app không cần chứng chỉ
+          xcodebuild build -workspace App/App.xcworkspace -scheme App -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CONFIGURATION_BUILD_DIR=build/Build/Products/Release-iphoneos
+          
+          # Đóng gói thành file .ipa
+          mkdir -p build/Payload
+          mv build/Build/Products/Release-iphoneos/App.app build/Payload/
+          cd build
+          zip -r App.ipa Payload
+    artifacts:
+      - build/App.ipa
