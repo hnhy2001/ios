@@ -5,13 +5,14 @@ workflows:
     scripts:
       - name: Build unsigned IPA
         script: |
-          # Build app dùng cấu hình của Swift Package Manager
-          xcodebuild build -project App/App.xcodeproj -scheme App -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CONFIGURATION_BUILD_DIR=build/Build/Products/Release-iphoneos
+          set -e # Bắt buộc: Dừng ngay lập tức nếu lệnh build thất bại
+
+          # Build và ép file xuất ra thư mục build_dir hiện tại
+          xcodebuild build -project App/App.xcodeproj -scheme App -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CONFIGURATION_BUILD_DIR=$PWD/build_dir
           
-          # Đóng gói thành file .ipa để tải về máy Windows
-          mkdir -p build/Payload
-          mv build/Build/Products/Release-iphoneos/App.app build/Payload/
-          cd build
+          # Đóng gói
+          mkdir -p Payload
+          cp -R build_dir/App.app Payload/
           zip -r App.ipa Payload
     artifacts:
-      - build/App.ipa
+      - App.ipa
